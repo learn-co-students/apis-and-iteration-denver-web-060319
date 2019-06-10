@@ -2,32 +2,45 @@ require 'rest-client'
 require 'json'
 require 'pry'
 
-def get_character_movies_from_api(character_name)
-  #make the web request
+def get_api_info
   response_string = RestClient.get('http://www.swapi.co/api/people/')
   response_hash = JSON.parse(response_string)
+  response_hash["results"]
+end
 
-  # iterate over the response hash to find the collection of `films` for the given
-  #   `character`
-  # collect those film API urls, make a web request to each URL to get the info
-  #  for that film
-  # return value of this method should be collection of info about each film.
-  #  i.e. an array of hashes in which each hash reps a given film
-  # this collection will be the argument given to `print_movies`
-  #  and that method will do some nice presentation stuff like puts out a list
-  #  of movies by title. Have a play around with the puts with other info about a given film.
+def get_character_movies_from_api(character_name)
+  characters = get_api_info
+  film_info = []
+  characters.each do |character|
+    if character["name"].downcase == character_name
+      character["films"].each do |website|
+        website_response = RestClient.get(website)
+        film_info << JSON.parse(website_response)
+      end
+    end
+  end
+  film_info
+end
+
+def print_characters
+  characters = get_api_info
+  puts "-------------------"
+  characters.each {|characters| puts characters["name"] }
+  puts "-------------------"
 end
 
 def print_movies(films)
   # some iteration magic and puts out the movies in a nice list
+  names = []
+  films.each do |film|
+    names << "Episode #{film["episode_id"]}. #{film["title"]}"
+  end
+  puts "----------------------------------"
+  puts names.sort
+  puts "----------------------------------"
 end
 
-def show_character_movies(character)
+def show_character_movies (character)
   films = get_character_movies_from_api(character)
   print_movies(films)
 end
-
-## BONUS
-
-# that `get_character_movies_from_api` method is probably pretty long. Does it do more than one job?
-# can you split it up into helper methods?
