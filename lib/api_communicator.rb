@@ -34,7 +34,8 @@ end
 def show_character_movies(character)
   film_hash = {}
   films = get_character_movies_from_api(character).map { |film| film_hash[film["title"]] = film["release_date"][0..3] }
-  print_movies(film_hash)
+  film_hash_by_year = film_hash.sort_by { |title, year| year }
+  print_movies(film_hash_by_year)
 end
 
 ## BONUS
