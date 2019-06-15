@@ -13,7 +13,7 @@ def get_character_movies_from_api(character_name)
       films_array = creature["films"]
     end
   end
-  creature_films = films_array.map { |film| JSON.parse(RestClient.get(film)) }
+  films_array.map { |film| JSON.parse(RestClient.get(film)) }
   
   # iterate over the response hash to find the collection of `films` for the given
   #   `character`
